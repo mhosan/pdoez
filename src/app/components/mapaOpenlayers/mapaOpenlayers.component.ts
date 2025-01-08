@@ -14,6 +14,7 @@ import { fromLonLat, toLonLat, transform } from 'ol/proj';
 import { Style, Circle, Fill, Stroke } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import GeoJSON from 'ol/format/GeoJSON';
+import CircleStyle from 'ol/style/Circle';
 
 
 @Component({
@@ -23,20 +24,39 @@ import GeoJSON from 'ol/format/GeoJSON';
   styleUrls: ['./mapaOpenlayers.component.css']
 })
 export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
-  private map!: Map; 
-  private overlay!: Overlay; 
+  private map!: Map;
+  private overlay!: Overlay;
+  private vectorLayerPdo!: VectorLayer;
+  private vectorLayerCabeceras!: VectorLayer;
+  private vectorLayerFFCC!: VectorLayer;
+  private vectorLayerViasCirculacion!: VectorLayer;
 
   constructor(private dataFromGeoJsonService: GeojsonService) { }
 
   ngOnInit(): void {
     this.initMap();
-    /** ========================== lectura del geojson ============================= */
+    /** ========================== lectura del geojson de los límites del partido ============= */
     this.dataFromGeoJsonService.getGeojson('pdoEzeiza3857.geojson').subscribe(data => {
       console.log(data);
       //this.addPointsToMap(data);
       this.addGeojsonToMap(data);
-     
     });
+    /** ========================== lectura del geojson de las cabeceras de algunos partidos === */
+    this.dataFromGeoJsonService.getGeojson('pdoEzeizaCabeceras.geojson').subscribe(data => {
+      console.log(data);
+      this.addPointsToMapFromGeoJson(data);
+    });
+    /** ========================== lectura del geojson de lFFCC================================ */
+    this.dataFromGeoJsonService.getGeojson('pdoEzeizaFFCC3857.geojson').subscribe(data => {
+      console.log(data);
+      this.addLinesToMapFromGeoJson(data);
+    });
+    /** ========================== lectura del geojson de vias de circulación================== */
+    this.dataFromGeoJsonService.getGeojson('pdoEzeizaViasCirculacion3857.geojson').subscribe(data => {
+      console.log(data);
+      this.addLinesToMapFromGeoJsonViasCirculacion(data);
+    });
+
   }
 
   ngAfterViewInit(): void {
@@ -52,18 +72,30 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     this.map.addOverlay(this.overlay);
 
     this.map.on('click', (event) => {
-      const feature = this.map.forEachFeatureAtPixel(event.pixel, (feature) => {
-        //console.log(feature);
-        return feature;
+      const feature = this.map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
+        return { feature, layer };
       });
 
+
       if (feature) {
-        const coordinates = (feature.getGeometry() as Point).getCoordinates();
-        //console.log(`Coordenadas: ${coordinates}`);
+        const coordinates = (feature.feature.getGeometry() as Point).getCoordinates();
         const lonLat = toLonLat(coordinates);
-        //console.log(`Latitud: ${lonLat[1]}, Longitud: ${lonLat[0]}`);
-        const popupContent = `<div>Latitud: ${lonLat[1]}, Longitud: ${lonLat[0]}</div>`;
+        const properties = (feature.feature as Feature).getProperties();
+        const layer = feature.layer;
+
+        let popupContent = '';
+
+        if (layer === this.vectorLayerPdo) {
+          // Mostrar propiedades específicas para la capa de límites del partido
+          popupContent = `<div>Propiedad 1: ${properties['fna']}</div>`;
+
+        } else if (layer === this.vectorLayerCabeceras) {
+          // Mostrar propiedades específicas para la capa de puntos
+          popupContent = `<div>Localidad: ${properties['nombre']}</div>`;
+        }
+
         const popupElement = document.getElementById('popup-content');
+        console.log(popupContent)
         if (popupElement) {
           popupElement.innerHTML = popupContent;
         } else {
@@ -74,6 +106,23 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         this.overlay.setPosition(undefined);
       }
     });
+    /* if (feature) {
+      const coordinates = (feature.getGeometry() as Point).getCoordinates();
+      const properties = JSON.stringify(feature.getProperties()["nombre"]);
+      //this.showPopup(coordinates, properties);
+      const popupContent = `<div>Coord.: ${coordinates}, Localidad: ${properties}</div>`;
+      const popupElement = document.getElementById('popup-content');
+      if (popupElement) {
+        popupElement.innerHTML = popupContent;
+      } else {
+        console.error("No se encontró el elemento popup-content");
+      }
+      this.overlay.setPosition(coordinates);
+    } else {
+      this.overlay.setPosition(undefined);
+    } 
+  });*/
+
 
     // Agregar evento pointermove para cambiar el cursor
     this.map.on('pointermove', (event) => {
@@ -96,13 +145,13 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       })
     });
   }
-  
 
- /** =================================================================
-  * @param data 
-  * En data viene el geojson que se va a agregar al mapa
-  * @returns 
-  ====================================================================*/
+
+  /** =================================================================
+   * @param data 
+   * En data viene el geojson que se va a agregar al mapa
+   * @returns 
+   ====================================================================*/
   private addGeojsonToMap(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
@@ -112,10 +161,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     const features = new GeoJSON().readFeatures(data);
 
     /** ============================ transformación de coordenadas ========================== */
-     /* const features = new GeoJSON().readFeatures(data, {
-      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
-      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
-    }); */
+    /* const features = new GeoJSON().readFeatures(data, {
+     dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
+     featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
+   }); */
 
     /* const features = new GeoJSON().readFeatures(data, {
       dataProjection: 'EPSG:22185', // Proyección original de los datos
@@ -143,18 +192,18 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       }
       return feature;
     }).filter(feature => feature !== null); */
-    
-     /* // Verificar si hay geometrías de tipo MultiLineString
-  const multiLineStringFeatures = features.filter(feature => {
-    const geometry = feature.getGeometry();
-    return geometry && geometry.getType() === 'MultiLineString';
-  });
 
-  if (multiLineStringFeatures.length === 0) {
-    console.warn('No se encontraron geometrías de tipo MultiLineString');
-  } else {
-    //console.log('Geometrías de tipo MultiLineString encontradas:', multiLineStringFeatures);
-  } */
+    /* // Verificar si hay geometrías de tipo MultiLineString
+ const multiLineStringFeatures = features.filter(feature => {
+   const geometry = feature.getGeometry();
+   return geometry && geometry.getType() === 'MultiLineString';
+ });
+
+ if (multiLineStringFeatures.length === 0) {
+   console.warn('No se encontraron geometrías de tipo MultiLineString');
+ } else {
+   //console.log('Geometrías de tipo MultiLineString encontradas:', multiLineStringFeatures);
+ } */
 
     /* const features = new GeoJSON().readFeatures(data, {
       dataProjection: 'EPSG:22185', // Proyección original de los datos
@@ -185,11 +234,11 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       features: features
     });
 
-/**=======================================================
- * Crear una capa vectorial con las geometrías del GeoJSON
- * Definir aqui el estilo de la capa
- =========================================================*/
-    const vectorLayer = new VectorLayer({
+    /**=======================================================
+     * Crear una capa vectorial con las geometrías del GeoJSON
+     * Definir aqui el estilo de la capa
+     =========================================================*/
+    this.vectorLayerPdo = new VectorLayer({
       source: vectorSource,
       style: new Style({
         fill: new Fill({
@@ -202,36 +251,139 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       })
     });
 
-    this.map.addLayer(vectorLayer);
+    this.map.addLayer(this.vectorLayerPdo);
+  }
 
-  /* private addPointsToMap(data: any[]): void {
+
+  /**
+   * Agregar capa de puntos desde geoJson
+   * @param data 
+   * @returns 
+   */
+  private addPointsToMapFromGeoJson(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
-      return; 
+      return;
     }
-    const vectorSource = new VectorSource();
-    data.forEach(point => {
-      const lat = parseFloat(point.latitud);
-      const lng = parseFloat(point.longitud);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        const feature = new Feature({
-          geometry: new Point(fromLonLat([lng, lat]))
-        });
-        vectorSource.addFeature(feature);
-      }
+
+    const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
+      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
     });
 
-    const vectorLayer = new VectorLayer({
+    const vectorSource = new VectorSource({
+      features: features
+    });
+
+    /**=======================================================
+    * Crear una capa vectorial con las geometrías del GeoJSON
+    * Definir aqui el estilo de la capa
+    =========================================================*/
+    this.vectorLayerCabeceras = new VectorLayer({
       source: vectorSource,
       style: new Style({
-        image: new Circle({
+        image: new CircleStyle({
           radius: 5,
-          fill: new Fill({ color: 'red' }),
-          stroke: new Stroke({ color: 'white', width: 1 })
+          fill: new Fill({
+            color: '#FF0000' // Color rojo para los puntos
+          }),
+          stroke: new Stroke({
+            color: '#FFFFFF', // Borde blanco para los puntos
+            width: 1
+          })
         })
       })
     });
 
-    this.map.addLayer(vectorLayer); */
+    this.map.addLayer(this.vectorLayerCabeceras);
   }
+  
+  private addLinesToMapFromGeoJson(data: any): void {
+    if (!this.map) {
+      console.error("El mapa no se ha inicializado todavía!");
+      return;
+    }
+    const features = new GeoJSON().readFeatures(data);
+    /* const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
+      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
+    }); */
+
+    const vectorSource = new VectorSource({
+      features: features
+    });
+
+    this.vectorLayerFFCC = new VectorLayer({
+      source: vectorSource,
+      style: new Style({
+        stroke: new Stroke({
+          color: '#0000FF', // Color azul para las líneas de ferrocarril
+          width: 2,
+          lineDash: [10, 10], // Línea discontinua
+          lineDashOffset: 0
+        })
+      })
+    });
+
+    this.map.addLayer(this.vectorLayerFFCC);
+  }
+
+  private addLinesToMapFromGeoJsonViasCirculacion(data: any): void {
+    if (!this.map) {
+      console.error("El mapa no se ha inicializado todavía!");
+      return;
+    }
+    const features = new GeoJSON().readFeatures(data);
+    /* const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
+      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
+    }); */
+
+    const vectorSource = new VectorSource({
+      features: features
+    });
+
+    this.vectorLayerFFCC = new VectorLayer({
+      source: vectorSource,
+      style: new Style({
+        stroke: new Stroke({
+          color: '#ff0000', // Color rojo
+          width: 0.5,
+        })
+      })
+    });
+
+    this.map.addLayer(this.vectorLayerFFCC);
+  }
+
 }
+
+/* private addPointsToMapFromCSV(data: any[]): void {
+   if (!this.map) {
+     console.error("El mapa no se ha inicializado todavía!");
+     return; 
+   }
+   const vectorSource = new VectorSource();
+   data.forEach(point => {
+     const lat = parseFloat(point.latitud);
+     const lng = parseFloat(point.longitud);
+     if (!isNaN(lat) && !isNaN(lng)) {
+       const feature = new Feature({
+         geometry: new Point(fromLonLat([lng, lat]))
+       });
+       vectorSource.addFeature(feature);
+     }
+   });
+
+   const vectorLayer = new VectorLayer({
+     source: vectorSource,
+     style: new Style({
+       image: new Circle({
+         radius: 5,
+         fill: new Fill({ color: 'red' }),
+         stroke: new Stroke({ color: 'white', width: 1 })
+       })
+     })
+   });
+
+   this.map.addLayer(vectorLayer); */
