@@ -4,13 +4,16 @@ import { Map, View } from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { DataFromCSVService } from '../../services/data-from-csv.service';
+import { GeojsonService } from '../../services/geojson.service';
+
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { fromLonLat, toLonLat } from 'ol/proj';
+import { fromLonLat, toLonLat, transform } from 'ol/proj';
 import { Style, Circle, Fill, Stroke } from 'ol/style';
 import Overlay from 'ol/Overlay';
+import GeoJSON from 'ol/format/GeoJSON';
 
 
 @Component({
@@ -23,12 +26,14 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   private map!: Map; 
   private overlay!: Overlay; 
 
-  constructor(private dataFromCSVService: DataFromCSVService) { }
+  constructor(private dataFromGeoJsonService: GeojsonService) { }
 
   ngOnInit(): void {
     this.initMap();
-    this.dataFromCSVService.getCSVData().subscribe(data => {
-      this.addPointsToMap(data);
+    this.dataFromGeoJsonService.getGeojson('pdoEzeiza.geojson').subscribe(data => {
+      //this.addPointsToMap(data);
+      this.addGeojsonToMap(data);
+      console.log(data);
     });
   }
 
@@ -89,8 +94,57 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       })
     });
   }
+  private addGeojsonToMap(data: any): void {
+    if (!this.map) {
+      console.error("El mapa no se ha inicializado todavía!");
+      return;
+    }
 
-  private addPointsToMap(data: any[]): void {
+    const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:22185', // Proyección original de los datos
+      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
+    }).map(feature => {
+      const geometry = feature.getGeometry();
+      if (geometry) {
+        // Transformar solo si la proyección de origen es diferente a EPSG:4326
+        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon') {
+          console.warn('Tipo de geometría no soportado:', geometry.getType());
+          return null;
+        }
+        try {
+          geometry.transform('EPSG:22185', 'EPSG:4326');
+        } catch (error) {
+          console.error('Error al transformar la geometría:', error);
+          return null;
+        }
+      } else {
+        console.warn('Feature sin geometría:', feature);
+        return null;
+      }
+      return feature;
+    }).filter(feature => feature !== null);
+
+    const vectorSource = new VectorSource({
+      features: features
+    });
+
+
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+      style: new Style({
+        fill: new Fill({
+          color: 'rgba(255, 255, 255, 0.6)'
+        }),
+        stroke: new Stroke({
+          color: '#319FD3',
+          width: 1
+        })
+      })
+    });
+
+    this.map.addLayer(vectorLayer);
+
+  /* private addPointsToMap(data: any[]): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return; 
@@ -118,6 +172,6 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       })
     });
 
-    this.map.addLayer(vectorLayer);
+    this.map.addLayer(vectorLayer); */
   }
 }
