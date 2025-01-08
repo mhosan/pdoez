@@ -30,10 +30,11 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initMap();
-    this.dataFromGeoJsonService.getGeojson('pdoEzeiza.geojson').subscribe(data => {
+    this.dataFromGeoJsonService.getGeojson('pdoEzeizaViasCirculacion.geojson').subscribe(data => {
+      console.log(data);
       //this.addPointsToMap(data);
       this.addGeojsonToMap(data);
-      console.log(data);
+     
     });
   }
 
@@ -107,7 +108,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       const geometry = feature.getGeometry();
       if (geometry) {
         // Transformar solo si la proyección de origen es diferente a EPSG:4326
-        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon') {
+        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon' &&
+            geometry.getType() !== 'MultiPoint' && geometry.getType() !== 'MultiLineString' && geometry.getType() !== 'MultiPolygon') {
           console.warn('Tipo de geometría no soportado:', geometry.getType());
           return null;
         }
