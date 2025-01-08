@@ -30,7 +30,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initMap();
-    this.dataFromGeoJsonService.getGeojson('pdoEzeizaViasCirculacion.geojson').subscribe(data => {
+    /** ========================== lectura del geojson ============================= */
+    this.dataFromGeoJsonService.getGeojson('pdoEzeiza3857.geojson').subscribe(data => {
       console.log(data);
       //this.addPointsToMap(data);
       this.addGeojsonToMap(data);
@@ -95,13 +96,67 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       })
     });
   }
+  
+
+ /** =================================================================
+  * @param data 
+  * En data viene el geojson que se va a agregar al mapa
+  * @returns 
+  ====================================================================*/
   private addGeojsonToMap(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return;
     }
 
-    const features = new GeoJSON().readFeatures(data, {
+    const features = new GeoJSON().readFeatures(data);
+
+    /** ============================ transformación de coordenadas ========================== */
+     /* const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
+      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
+    }); */
+
+    /* const features = new GeoJSON().readFeatures(data, {
+      dataProjection: 'EPSG:22185', // Proyección original de los datos
+      featureProjection: 'EPSG:22185' // Mantener la proyección original para la transformación manual
+    }).map(feature => {
+      const geometry = feature.getGeometry();
+      if (geometry) {
+        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon' &&
+            geometry.getType() !== 'MultiPoint' && geometry.getType() !== 'MultiLineString' && geometry.getType() !== 'MultiPolygon') {
+          console.warn('Tipo de geometría no soportado:', geometry.getType());
+          return null;
+        }
+        try {
+          // Transformar de EPSG:22185 a EPSG:4326
+          geometry.transform('EPSG:22185', 'EPSG:4326');
+          // Transformar de EPSG:4326 a EPSG:3857
+          geometry.transform('EPSG:4326', 'EPSG:3857');
+        } catch (error) {
+          console.error('Error al transformar la geometría:', error);
+          return null;
+        }
+      } else {
+        console.warn('Feature sin geometría:', feature);
+        return null;
+      }
+      return feature;
+    }).filter(feature => feature !== null); */
+    
+     /* // Verificar si hay geometrías de tipo MultiLineString
+  const multiLineStringFeatures = features.filter(feature => {
+    const geometry = feature.getGeometry();
+    return geometry && geometry.getType() === 'MultiLineString';
+  });
+
+  if (multiLineStringFeatures.length === 0) {
+    console.warn('No se encontraron geometrías de tipo MultiLineString');
+  } else {
+    //console.log('Geometrías de tipo MultiLineString encontradas:', multiLineStringFeatures);
+  } */
+
+    /* const features = new GeoJSON().readFeatures(data, {
       dataProjection: 'EPSG:22185', // Proyección original de los datos
       featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
     }).map(feature => {
@@ -124,22 +179,25 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         return null;
       }
       return feature;
-    }).filter(feature => feature !== null);
+    }).filter(feature => feature !== null); */
 
     const vectorSource = new VectorSource({
       features: features
     });
 
-
+/**=======================================================
+ * Crear una capa vectorial con las geometrías del GeoJSON
+ * Definir aqui el estilo de la capa
+ =========================================================*/
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       style: new Style({
         fill: new Fill({
-          color: 'rgba(255, 255, 255, 0.6)'
+          color: 'rgba(6, 24, 104, 0.1)'
         }),
         stroke: new Stroke({
           color: '#319FD3',
-          width: 1
+          width: 2
         })
       })
     });
