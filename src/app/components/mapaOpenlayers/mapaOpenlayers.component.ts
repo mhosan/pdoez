@@ -15,6 +15,7 @@ import { Style, Circle, Fill, Stroke } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import GeoJSON from 'ol/format/GeoJSON';
 import CircleStyle from 'ol/style/Circle';
+import { TileWMS } from 'ol/source';
 
 
 @Component({
@@ -56,7 +57,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       console.log(data);
       this.addLinesToMapFromGeoJsonViasCirculacion(data);
     });
-
+    /** ========================== agregar servicio WMS ======================================= */
+    this.addWmsLayerMz();
+    /** ========================== agregar servicio WMS ======================================= */
+    this.addWmsLayerPl();
   }
 
   ngAfterViewInit(): void {
@@ -297,7 +301,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
 
     this.map.addLayer(this.vectorLayerCabeceras);
   }
-  
+
   private addLinesToMapFromGeoJson(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
@@ -356,6 +360,35 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     this.map.addLayer(this.vectorLayerFFCC);
   }
 
+  private addWmsLayerMz(): void {
+    const wmsLayer = new TileLayer({
+      source: new TileWMS({
+        url: 'http://geo.arba.gov.ar/geoserver/idera/wms', // Reemplaza con la URL de tu servidor WMS
+        params: {
+          'LAYERS': 'Manzana', // Reemplaza con el nombre de la capa WMS
+          'TILED': true
+        },
+        serverType: 'geoserver', // Reemplaza con el tipo de servidor WMS (por ejemplo, 'geoserver')
+        transition: 0
+      })
+    });
+  this.map.addLayer(wmsLayer);
+  }
+
+  private addWmsLayerPl(): void {
+    const wmsLayer = new TileLayer({
+      source: new TileWMS({
+        url: 'http://geo.arba.gov.ar/geoserver/idera/wms', // Reemplaza con la URL de tu servidor WMS
+        params: {
+          'LAYERS': 'Parcela', // Reemplaza con el nombre de la capa WMS
+          'TILED': true
+        },
+        serverType: 'geoserver', // Reemplaza con el tipo de servidor WMS (por ejemplo, 'geoserver')
+        transition: 0
+      })
+    });
+  this.map.addLayer(wmsLayer);
+  }
 }
 
 /* private addPointsToMapFromCSV(data: any[]): void {
