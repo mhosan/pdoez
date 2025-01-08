@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "visoria": {
+    "ezeiza": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/visoria",
+            "outputPath": "dist/ezeiza",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -36,7 +36,7 @@
             "scripts": [
               "node_modules/leaflet/dist/leaflet.js"
             ],
-            "baseHref": "/visoria/",
+            "baseHref": "/ezeiza/",
             "allowedCommonJsDependencies": [
               "leaflet",
               "leaflet.markercluster"
@@ -76,10 +76,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "visoria:build:production"
+              "buildTarget": "ezeiza:build:production"
             },
             "development": {
-              "buildTarget": "visoria:build:development"
+              "buildTarget": "ezeiza:build:development"
             }
           },
           "defaultConfiguration": "development"

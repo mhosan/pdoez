@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    CSVpath: '/visoria/assets/data/lotesDepurado.csv'
+    CSVpath: '/ezeiza/assets/data/lotesDepurado.csv'
 };

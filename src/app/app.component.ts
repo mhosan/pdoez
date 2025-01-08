@@ -26,5 +26,5 @@ export class AppComponent {
     });
   }
 
-  title = 'visoria';
+  title = 'ezeiza';
 }
