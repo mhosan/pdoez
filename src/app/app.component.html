@@ -1,19 +1,67 @@
-<div style="text-align: center; font-family: Arial; 
-font-size: 20px; padding-top: 0.5vh;">
-  <nav>
-    <p>Pdo. Ezeiza</p>
+<!--<nav>-->
     <!-- <a routerLink="/leaflet">Mapa Leaflet</a> -->
-    <a routerLink="/openlayers">Mapa OpenLayers</a>
+    <!-- <a routerLink="/openlayers">Mapa OpenLayers</a> -->
     <!-- <a routerLink="/graficos">Graficos</a> -->
-    <button (click)="toggleLayerMenu()">Capas</button>
+ <!--</nav>-->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Pdo. Ezeiza</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Layers
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkPdo" checked (change)="toggleLayer('pdo')"> Límites del Partido
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkCabeceras" checked (change)="toggleLayer('cabeceras')"> Cabeceras
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkFFCC" checked (change)="toggleLayer('ffcc')"> Líneas de Ferrocarril
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkViasCirculacion" checked (change)="toggleLayer('viasCirculacion')"> Vías de Circulación
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkWmsMz" checked (change)="toggleLayer('wmsMz')"> Capa WMS Mz
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" id="chkWmsPl" checked (change)="toggleLayer('wmsPl')"> Capa WMS Pl
+                </label>
+              </li>
+              <li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
   </nav>
-  <div id="layerMenu" class="dropdown-content">
-    <label><input type="checkbox" id="chkPdo" checked (change)="toggleLayer('pdo')"> Límites del Partido</label>
-    <label><input type="checkbox" id="chkCabeceras" checked (change)="toggleLayer('cabeceras')"> Cabeceras</label>
-    <label><input type="checkbox" id="chkFFCC" checked (change)="toggleLayer('ffcc')"> Líneas de Ferrocarril</label>
-    <label><input type="checkbox" id="chkViasCirculacion" checked (change)="toggleLayer('viasCirculacion')"> Vías de Circulación</label>
-    <label><input type="checkbox" id="chkWmsMz" checked (change)="toggleLayer('wmsMz')"> Capa WMS Mz</label>
-    <label><input type="checkbox" id="chkWmsPl" checked (change)="toggleLayer('wmsPl')"> Capa WMS Pl</label>
-  </div> 
   <router-outlet></router-outlet>
-</div>
+

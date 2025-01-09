@@ -5,7 +5,6 @@ import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import { DataFromCSVService } from '../../services/data-from-csv.service';
 import { GeojsonService } from '../../services/geojson.service';
-
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import VectorLayer from 'ol/layer/Vector';
@@ -86,7 +85,6 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         return { feature, layer };
       });
 
-
       if (feature) {
         const coordinates = (feature.feature.getGeometry() as Point).getCoordinates();
         const lonLat = toLonLat(coordinates);
@@ -116,25 +114,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         this.overlay.setPosition(undefined);
       }
     });
-    /* if (feature) {
-      const coordinates = (feature.getGeometry() as Point).getCoordinates();
-      const properties = JSON.stringify(feature.getProperties()["nombre"]);
-      //this.showPopup(coordinates, properties);
-      const popupContent = `<div>Coord.: ${coordinates}, Localidad: ${properties}</div>`;
-      const popupElement = document.getElementById('popup-content');
-      if (popupElement) {
-        popupElement.innerHTML = popupContent;
-      } else {
-        console.error("No se encontró el elemento popup-content");
-      }
-      this.overlay.setPosition(coordinates);
-    } else {
-      this.overlay.setPosition(undefined);
-    } 
-  });*/
 
-
-    // Agregar evento pointermove para cambiar el cursor
+    // Agregar evento pointermove para cambiar el cursor por una manito
     this.map.on('pointermove', (event) => {
       const hit = this.map.hasFeatureAtPixel(event.pixel);
       this.map.getTargetElement().style.cursor = hit ? 'pointer' : '';
@@ -150,10 +131,12 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         })
       ],
       view: new View({
-        center: fromLonLat([-60.7000, -36.6167]), // Coordenadas de Buenos Aires
-        zoom: 5
+        center: fromLonLat([-58.525879837178536, -34.85481804911688]), // Coordenadas de Buenos Aires, Muni Eze: -34.85481804911688, -58.525879837178536
+        zoom: 12
       })
     });
+    // Agregar la capa WMS Pl después de la capa base
+    //this.addWmsLayerPl();
   }
 
 
@@ -293,7 +276,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         transition: 0
       })
     });
-  this.map.addLayer(this.wmsLayerMz);
+    this.map.addLayer(this.wmsLayerMz);
   }
 
 
@@ -312,7 +295,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         transition: 0
       })
     });
-  this.map.addLayer(this.wmsLayerPl);
+    this.map.addLayer(this.wmsLayerPl);
   }
 
   /** =================================================================
