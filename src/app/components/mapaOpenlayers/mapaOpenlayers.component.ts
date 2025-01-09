@@ -127,16 +127,15 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       target: 'map',
       layers: [
         new TileLayer({
-          source: new OSM()
+          source: new OSM(),
+          opacity: 0.5
         })
       ],
       view: new View({
         center: fromLonLat([-58.525879837178536, -34.85481804911688]), // Coordenadas de Buenos Aires, Muni Eze: -34.85481804911688, -58.525879837178536
-        zoom: 12
+        zoom: 11
       })
     });
-    // Agregar la capa WMS Pl después de la capa base
-    //this.addWmsLayerPl();
   }
 
 
@@ -253,7 +252,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       source: vectorSource,
       style: new Style({
         stroke: new Stroke({
-          color: '#ff0000', // Color rojo
+          color: 'rgb(105, 105, 105)', // Color gris oscuro
           width: 0.5,
         })
       })
