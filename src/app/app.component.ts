@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DataFromCSVService } from './services/data-from-csv.service';
+
 
 @Component({
   selector: 'app-root',
@@ -17,14 +17,19 @@ import { DataFromCSVService } from './services/data-from-csv.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  npuntos: number = 0;
-  constructor(private dataFromCSVService: DataFromCSVService) { }
   
-  ngOnInit(): void {
-    this.dataFromCSVService.getCSVData().subscribe(data => {
-      this.npuntos = data.length;
-    });
+  title = 'ezeiza';
+  
+  toggleLayerMenu(): void {
+    const layerMenu = document.getElementById('layerMenu');
+    if (layerMenu) {
+      layerMenu.classList.toggle('show');
+    }
   }
 
-  title = 'ezeiza';
+  toggleLayer(layerName: string): void {
+    const event = new CustomEvent('toggleLayer', { detail: layerName });
+    window.dispatchEvent(event);
+  }
+
 }

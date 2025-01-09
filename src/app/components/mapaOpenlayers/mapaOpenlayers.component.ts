@@ -31,6 +31,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   private vectorLayerCabeceras!: VectorLayer;
   private vectorLayerFFCC!: VectorLayer;
   private vectorLayerViasCirculacion!: VectorLayer;
+  private wmsLayerMz!: TileLayer;
+  private wmsLayerPl!: TileLayer;
 
   constructor(private dataFromGeoJsonService: GeojsonService) { }
 
@@ -61,6 +63,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     this.addWmsLayerMz();
     /** ========================== agregar servicio WMS ======================================= */
     this.addWmsLayerPl();
+    // Escuchar el evento personalizado para alternar la visibilidad de las capas
+    window.addEventListener('toggleLayer', (event: any) => {
+      this.toggleLayer(event.detail);
+    });
   }
 
   ngAfterViewInit(): void {
@@ -361,7 +367,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
   private addWmsLayerMz(): void {
-    const wmsLayer = new TileLayer({
+    this.wmsLayerMz = new TileLayer({
       source: new TileWMS({
         url: 'http://geo.arba.gov.ar/geoserver/idera/wms', // Reemplaza con la URL de tu servidor WMS
         params: {
@@ -372,11 +378,11 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         transition: 0
       })
     });
-  this.map.addLayer(wmsLayer);
+  this.map.addLayer(this.wmsLayerMz);
   }
 
   private addWmsLayerPl(): void {
-    const wmsLayer = new TileLayer({
+    this.wmsLayerPl = new TileLayer({
       source: new TileWMS({
         url: 'http://geo.arba.gov.ar/geoserver/idera/wms', // Reemplaza con la URL de tu servidor WMS
         params: {
@@ -387,7 +393,30 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         transition: 0
       })
     });
-  this.map.addLayer(wmsLayer);
+  this.map.addLayer(this.wmsLayerPl);
+  }
+
+  toggleLayer(layerName: string): void {
+    switch (layerName) {
+      case 'pdo':
+        this.vectorLayerPdo.setVisible(!this.vectorLayerPdo.getVisible());
+        break;
+      case 'cabeceras':
+        this.vectorLayerCabeceras.setVisible(!this.vectorLayerCabeceras.getVisible());
+        break;
+      case 'ffcc':
+        this.vectorLayerFFCC.setVisible(!this.vectorLayerFFCC.getVisible());
+        break;
+      case 'viasCirculacion':
+        this.vectorLayerViasCirculacion.setVisible(!this.vectorLayerViasCirculacion.getVisible());
+        break;
+      case 'wmsMz':
+        this.wmsLayerMz.setVisible(!this.wmsLayerMz.getVisible());
+        break;
+      case 'wmsPl':
+        this.wmsLayerPl.setVisible(!this.wmsLayerPl.getVisible());
+        break;
+    }
   }
 }
 

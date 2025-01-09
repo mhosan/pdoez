@@ -5,6 +5,15 @@ font-size: 20px; padding-top: 0.5vh;">
     <!-- <a routerLink="/leaflet">Mapa Leaflet</a> -->
     <a routerLink="/openlayers">Mapa OpenLayers</a>
     <!-- <a routerLink="/graficos">Graficos</a> -->
-  </nav> 
+    <button (click)="toggleLayerMenu()">Capas</button>
+  </nav>
+  <div id="layerMenu" class="dropdown-content">
+    <label><input type="checkbox" id="chkPdo" checked (change)="toggleLayer('pdo')"> Límites del Partido</label>
+    <label><input type="checkbox" id="chkCabeceras" checked (change)="toggleLayer('cabeceras')"> Cabeceras</label>
+    <label><input type="checkbox" id="chkFFCC" checked (change)="toggleLayer('ffcc')"> Líneas de Ferrocarril</label>
+    <label><input type="checkbox" id="chkViasCirculacion" checked (change)="toggleLayer('viasCirculacion')"> Vías de Circulación</label>
+    <label><input type="checkbox" id="chkWmsMz" checked (change)="toggleLayer('wmsMz')"> Capa WMS Mz</label>
+    <label><input type="checkbox" id="chkWmsPl" checked (change)="toggleLayer('wmsPl')"> Capa WMS Pl</label>
+  </div> 
   <router-outlet></router-outlet>
 </div>
