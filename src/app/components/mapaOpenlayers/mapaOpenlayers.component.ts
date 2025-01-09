@@ -42,17 +42,17 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     this.dataFromGeoJsonService.getGeojson('pdoEzeiza3857.geojson').subscribe(data => {
       console.log(data);
       //this.addPointsToMap(data);
-      this.addGeojsonToMap(data);
+      this.addGeojsonToMapPdo(data);
     });
     /** ========================== lectura del geojson de las cabeceras de algunos partidos === */
     this.dataFromGeoJsonService.getGeojson('pdoEzeizaCabeceras.geojson').subscribe(data => {
       console.log(data);
-      this.addPointsToMapFromGeoJson(data);
+      this.addPointsToMapFromGeoJsonCabeceras(data);
     });
     /** ========================== lectura del geojson de lFFCC================================ */
     this.dataFromGeoJsonService.getGeojson('pdoEzeizaFFCC3857.geojson').subscribe(data => {
       console.log(data);
-      this.addLinesToMapFromGeoJson(data);
+      this.addLinesToMapFromGeoJsonFFCC(data);
     });
     /** ========================== lectura del geojson de vias de circulación================== */
     this.dataFromGeoJsonService.getGeojson('pdoEzeizaViasCirculacion3857.geojson').subscribe(data => {
@@ -157,97 +157,20 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
 
-  /** =================================================================
+  /**=================================================================
    * @param data 
-   * En data viene el geojson que se va a agregar al mapa
+   * En data viene el geojson que se va a agregar al mapa, del partido
    * @returns 
-   ====================================================================*/
-  private addGeojsonToMap(data: any): void {
+   ==================================================================*/
+  private addGeojsonToMapPdo(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return;
     }
-
     const features = new GeoJSON().readFeatures(data);
-
-    /** ============================ transformación de coordenadas ========================== */
-    /* const features = new GeoJSON().readFeatures(data, {
-     dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
-     featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
-   }); */
-
-    /* const features = new GeoJSON().readFeatures(data, {
-      dataProjection: 'EPSG:22185', // Proyección original de los datos
-      featureProjection: 'EPSG:22185' // Mantener la proyección original para la transformación manual
-    }).map(feature => {
-      const geometry = feature.getGeometry();
-      if (geometry) {
-        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon' &&
-            geometry.getType() !== 'MultiPoint' && geometry.getType() !== 'MultiLineString' && geometry.getType() !== 'MultiPolygon') {
-          console.warn('Tipo de geometría no soportado:', geometry.getType());
-          return null;
-        }
-        try {
-          // Transformar de EPSG:22185 a EPSG:4326
-          geometry.transform('EPSG:22185', 'EPSG:4326');
-          // Transformar de EPSG:4326 a EPSG:3857
-          geometry.transform('EPSG:4326', 'EPSG:3857');
-        } catch (error) {
-          console.error('Error al transformar la geometría:', error);
-          return null;
-        }
-      } else {
-        console.warn('Feature sin geometría:', feature);
-        return null;
-      }
-      return feature;
-    }).filter(feature => feature !== null); */
-
-    /* // Verificar si hay geometrías de tipo MultiLineString
- const multiLineStringFeatures = features.filter(feature => {
-   const geometry = feature.getGeometry();
-   return geometry && geometry.getType() === 'MultiLineString';
- });
-
- if (multiLineStringFeatures.length === 0) {
-   console.warn('No se encontraron geometrías de tipo MultiLineString');
- } else {
-   //console.log('Geometrías de tipo MultiLineString encontradas:', multiLineStringFeatures);
- } */
-
-    /* const features = new GeoJSON().readFeatures(data, {
-      dataProjection: 'EPSG:22185', // Proyección original de los datos
-      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
-    }).map(feature => {
-      const geometry = feature.getGeometry();
-      if (geometry) {
-        // Transformar solo si la proyección de origen es diferente a EPSG:4326
-        if (geometry.getType() !== 'Point' && geometry.getType() !== 'LineString' && geometry.getType() !== 'Polygon' &&
-            geometry.getType() !== 'MultiPoint' && geometry.getType() !== 'MultiLineString' && geometry.getType() !== 'MultiPolygon') {
-          console.warn('Tipo de geometría no soportado:', geometry.getType());
-          return null;
-        }
-        try {
-          geometry.transform('EPSG:22185', 'EPSG:4326');
-        } catch (error) {
-          console.error('Error al transformar la geometría:', error);
-          return null;
-        }
-      } else {
-        console.warn('Feature sin geometría:', feature);
-        return null;
-      }
-      return feature;
-    }).filter(feature => feature !== null); */
-
     const vectorSource = new VectorSource({
       features: features
     });
-
-    /**=======================================================
-     * Crear una capa vectorial con las geometrías del GeoJSON
-     * Definir aqui el estilo de la capa
-     =========================================================*/
     this.vectorLayerPdo = new VectorLayer({
       source: vectorSource,
       style: new Style({
@@ -260,35 +183,27 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         })
       })
     });
-
     this.map.addLayer(this.vectorLayerPdo);
   }
 
 
-  /**
-   * Agregar capa de puntos desde geoJson
+  /** =================================================================
+   * Agregar capa de puntos desde geoJson cabeceras
    * @param data 
    * @returns 
-   */
-  private addPointsToMapFromGeoJson(data: any): void {
+   ===================================================================*/
+  private addPointsToMapFromGeoJsonCabeceras(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return;
     }
-
     const features = new GeoJSON().readFeatures(data, {
       dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
       featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
     });
-
     const vectorSource = new VectorSource({
       features: features
     });
-
-    /**=======================================================
-    * Crear una capa vectorial con las geometrías del GeoJSON
-    * Definir aqui el estilo de la capa
-    =========================================================*/
     this.vectorLayerCabeceras = new VectorLayer({
       source: vectorSource,
       style: new Style({
@@ -304,25 +219,23 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         })
       })
     });
-
     this.map.addLayer(this.vectorLayerCabeceras);
   }
 
-  private addLinesToMapFromGeoJson(data: any): void {
+  /** =================================================================
+   *  agregar capa FFCC
+   * @param data 
+   * @returns 
+   ===================================================================*/
+  private addLinesToMapFromGeoJsonFFCC(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return;
     }
     const features = new GeoJSON().readFeatures(data);
-    /* const features = new GeoJSON().readFeatures(data, {
-      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
-      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
-    }); */
-
     const vectorSource = new VectorSource({
       features: features
     });
-
     this.vectorLayerFFCC = new VectorLayer({
       source: vectorSource,
       style: new Style({
@@ -334,26 +247,26 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         })
       })
     });
-
     this.map.addLayer(this.vectorLayerFFCC);
   }
 
+  /** =================================================================
+   * capa de vias de circulación
+   * @param data 
+   * @returns 
+   ===================================================================*/
   private addLinesToMapFromGeoJsonViasCirculacion(data: any): void {
     if (!this.map) {
       console.error("El mapa no se ha inicializado todavía!");
       return;
     }
     const features = new GeoJSON().readFeatures(data);
-    /* const features = new GeoJSON().readFeatures(data, {
-      dataProjection: 'EPSG:4326', // Proyección original de los datos (coordenadas geográficas)
-      featureProjection: 'EPSG:3857' // Proyección del mapa (Web Mercator)
-    }); */
 
     const vectorSource = new VectorSource({
       features: features
     });
 
-    this.vectorLayerFFCC = new VectorLayer({
+    this.vectorLayerViasCirculacion = new VectorLayer({
       source: vectorSource,
       style: new Style({
         stroke: new Stroke({
@@ -362,10 +275,12 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         })
       })
     });
-
-    this.map.addLayer(this.vectorLayerFFCC);
+    this.map.addLayer(this.vectorLayerViasCirculacion);
   }
 
+  /** =================================================================
+   * Layer wms de manzanas
+   ===================================================================*/
   private addWmsLayerMz(): void {
     this.wmsLayerMz = new TileLayer({
       source: new TileWMS({
@@ -381,6 +296,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   this.map.addLayer(this.wmsLayerMz);
   }
 
+
+  /** =================================================================
+   * Layer wms de parcelas
+   ===================================================================*/
   private addWmsLayerPl(): void {
     this.wmsLayerPl = new TileLayer({
       source: new TileWMS({
@@ -396,6 +315,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   this.map.addLayer(this.wmsLayerPl);
   }
 
+  /** =================================================================
+   * 
+   * @param layerName 
+   ===================================================================*/
   toggleLayer(layerName: string): void {
     switch (layerName) {
       case 'pdo':
@@ -419,33 +342,3 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     }
   }
 }
-
-/* private addPointsToMapFromCSV(data: any[]): void {
-   if (!this.map) {
-     console.error("El mapa no se ha inicializado todavía!");
-     return; 
-   }
-   const vectorSource = new VectorSource();
-   data.forEach(point => {
-     const lat = parseFloat(point.latitud);
-     const lng = parseFloat(point.longitud);
-     if (!isNaN(lat) && !isNaN(lng)) {
-       const feature = new Feature({
-         geometry: new Point(fromLonLat([lng, lat]))
-       });
-       vectorSource.addFeature(feature);
-     }
-   });
-
-   const vectorLayer = new VectorLayer({
-     source: vectorSource,
-     style: new Style({
-       image: new Circle({
-         radius: 5,
-         fill: new Fill({ color: 'red' }),
-         stroke: new Stroke({ color: 'white', width: 1 })
-       })
-     })
-   });
-
-   this.map.addLayer(vectorLayer); */
