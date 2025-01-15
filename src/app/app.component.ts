@@ -31,5 +31,9 @@ export class AppComponent {
     const event = new CustomEvent('toggleLayer', { detail: layerName });
     window.dispatchEvent(event);
   }
-
+  
+  toggleLayerBase(layerName: string): void {
+    const event = new CustomEvent('toggleLayerBase', { detail: layerName });
+    window.dispatchEvent(event);
+  }
 }

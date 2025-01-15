@@ -1,67 +1,91 @@
 <!--<nav>-->
-    <!-- <a routerLink="/leaflet">Mapa Leaflet</a> -->
-    <!-- <a routerLink="/openlayers">Mapa OpenLayers</a> -->
-    <!-- <a routerLink="/graficos">Graficos</a> -->
- <!--</nav>-->
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Ezeiza Municipio</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <!-- <li class="nav-item">
+<!-- <a routerLink="/leaflet">Mapa Leaflet</a> -->
+<!-- <a routerLink="/openlayers">Mapa OpenLayers</a> -->
+<!-- <a routerLink="/graficos">Graficos</a> -->
+<!--</nav>-->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Ezeiza Municipio</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- <li class="nav-item">
             <a class="nav-link" href="#">Link</a>
           </li> -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Capas
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkPdo" checked (change)="toggleLayer('pdo')"> Límites del Partido (Indec)
-                </label>
-              </li>
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkCabeceras" checked (change)="toggleLayer('cabeceras')"> Cabeceras de Pdos.  (Indec)
-                </label>
-              </li>
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkFFCC" checked (change)="toggleLayer('ffcc')"> Líneas de Ferrocarril  (Indec)
-                </label>
-              </li>
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkViasCirculacion" checked (change)="toggleLayer('viasCirculacion')"> Vías de Circulación  (Indec)
-                </label>
-              </li>
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkWmsMz" (change)="toggleLayer('wmsMz')"> Capa Manzanas (ARBA WMS)
-                </label>
-              </li>
-              <li>
-                <label class="dropdown-item">
-                  <input type="checkbox" id="chkWmsPl" (change)="toggleLayer('wmsPl')"> Capa Parcelas (ARBA WMS)
-                </label>
-              </li>
-              <li>
-            </ul>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link disabled" [ariaDisabled]="true" >Disabled</a>
-          </li> -->
-        </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Buscar</button>
-        </form>
-      </div>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Capas superpuestas
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkPdo" checked (change)="toggleLayer('pdo')"> Límites del Partido (Indec)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkCabeceras" checked (change)="toggleLayer('cabeceras')"> Cabeceras de Pdos.
+                (Indec)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkFFCC" checked (change)="toggleLayer('ffcc')"> Líneas de Ferrocarril
+                (Indec)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkViasCirculacion" checked (change)="toggleLayer('viasCirculacion')"> Vías
+                de Circulación (Indec)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkWmsMz" (change)="toggleLayer('wmsMz')"> Capa Manzanas (ARBA WMS)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="checkbox" id="chkWmsPl" (change)="toggleLayer('wmsPl')"> Capa Parcelas (ARBA WMS)
+              </label>
+            </li>
+            <li>
+          </ul>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link disabled" [ariaDisabled]="true" >Disabled</a>
+      </li> -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="baseLayerDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Capas Base
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="baseLayerDropdown">
+            <li>
+              <label class="dropdown-item">
+                <input type="radio" name="baseLayer" value="osm" checked (change)="toggleLayerBase('osm')">
+                OpenStreetMap
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="radio" name="baseLayer" value="satellite" (change)="toggleLayerBase('satellite')"> Imagen
+                Satelital (Google)
+              </label>
+            </li>
+          </ul>
+        </li> 
+      </ul>
+      
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Buscar</button>
+      </form>
     </div>
-  </nav>
-  <router-outlet></router-outlet>
-
+  </div>
+</nav>
+<router-outlet></router-outlet>

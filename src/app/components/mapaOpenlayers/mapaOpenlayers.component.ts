@@ -14,7 +14,7 @@ import { Style, Circle, Fill, Stroke } from 'ol/style';
 import Overlay from 'ol/Overlay';
 import GeoJSON from 'ol/format/GeoJSON';
 import CircleStyle from 'ol/style/Circle';
-import { TileWMS } from 'ol/source';
+import { TileWMS, XYZ } from 'ol/source';
 
 
 @Component({
@@ -32,6 +32,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   private vectorLayerViasCirculacion!: VectorLayer;
   private wmsLayerMz!: TileLayer;
   private wmsLayerPl!: TileLayer;
+  private osmLayer!: TileLayer;
+  private satelliteLayer!: TileLayer;
 
   constructor(private dataFromGeoJsonService: GeojsonService) { }
 
@@ -65,6 +67,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
     // Escuchar el evento personalizado para alternar la visibilidad de las capas
     window.addEventListener('toggleLayer', (event: any) => {
       this.toggleLayer(event.detail);
+    });
+    // Escuchar el evento personalizado para alternar las capas base 
+    window.addEventListener('toggleLayerBase', (event: any) => {
+      this.changeBaseLayer(event.detail);
     });
   }
 
@@ -123,19 +129,42 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
   private initMap(): void {
+    this.osmLayer = new TileLayer({
+      source: new OSM(),
+      visible: true
+    });
+
+    this.satelliteLayer = new TileLayer({
+      source: new XYZ({
+        url: 'http://www.google.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}'
+      }),
+      visible: false
+    });
+
     this.map = new Map({
       target: 'map',
       layers: [
-        new TileLayer({
-          source: new OSM(),
-          opacity: 0.5
-        })
+        this.osmLayer,
+        this.satelliteLayer
       ],
       view: new View({
         center: fromLonLat([-58.525879837178536, -34.85481804911688]), // Coordenadas de Buenos Aires, Muni Eze: -34.85481804911688, -58.525879837178536
         zoom: 11
       })
     });
+  }
+
+  changeBaseLayer(layerName: string): void {
+    switch (layerName) {
+      case 'osm':
+        this.osmLayer.setVisible(true);
+        this.satelliteLayer.setVisible(false);
+        break;
+      case 'satellite':
+        this.osmLayer.setVisible(false);
+        this.satelliteLayer.setVisible(true);
+        break;
+    }
   }
 
 
