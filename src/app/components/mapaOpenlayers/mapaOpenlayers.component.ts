@@ -189,8 +189,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
           color: 'rgba(6, 24, 104, 0.1)'
         }),
         stroke: new Stroke({
-          color: 'rgba(218, 23, 23, 0.8)',
-          width: 4,
+          color: 'rgba(240, 177, 83, 0.99)',
+          width: 5,
           lineDash: [10, 10], // Línea discontinua
           lineDashOffset: 0
         })
