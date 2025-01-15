@@ -140,9 +140,9 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
 
 
   /**=================================================================
-   * @param data 
-   * En data viene el geojson que se va a agregar al mapa, del partido
-   * @returns 
+   * 
+   * GeoJson con el partido de Ez.
+   *  
    ==================================================================*/
   private addGeojsonToMapPdo(data: any): void {
     if (!this.map) {
@@ -160,8 +160,10 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
           color: 'rgba(6, 24, 104, 0.1)'
         }),
         stroke: new Stroke({
-          color: '#319FD3',
-          width: 2
+          color: 'rgba(218, 23, 23, 0.8)',
+          width: 4,
+          lineDash: [10, 10], // Línea discontinua
+          lineDashOffset: 0
         })
       })
     });
@@ -170,9 +172,9 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
 
 
   /** =================================================================
-   * Agregar capa de puntos desde geoJson cabeceras
-   * @param data 
-   * @returns 
+   * 
+   * GeoJson con los puntos de las cabeceras de partido 
+   * 
    ===================================================================*/
   private addPointsToMapFromGeoJsonCabeceras(data: any): void {
     if (!this.map) {
@@ -205,9 +207,9 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
   /** =================================================================
-   *  agregar capa FFCC
-   * @param data 
-   * @returns 
+   *  
+   * GeoJson con las líneas de FFCC 
+   *  
    ===================================================================*/
   private addLinesToMapFromGeoJsonFFCC(data: any): void {
     if (!this.map) {
@@ -224,8 +226,8 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         stroke: new Stroke({
           color: '#0000FF', // Color azul para las líneas de ferrocarril
           width: 2,
-          lineDash: [10, 10], // Línea discontinua
-          lineDashOffset: 0
+          lineDash: [10, 10, 1, 10], // Línea discontinua
+          
         })
       })
     });
@@ -233,9 +235,9 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
   /** =================================================================
-   * capa de vias de circulación
-   * @param data 
-   * @returns 
+   * 
+   * GeoJson con las líneas de vias de circulación 
+   *  
    ===================================================================*/
   private addLinesToMapFromGeoJsonViasCirculacion(data: any): void {
     if (!this.map) {
@@ -261,7 +263,9 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   }
 
   /** =================================================================
-   * Layer wms de manzanas
+   * 
+   * Layer wms de manzanas de ARBA
+   * 
    ===================================================================*/
   private addWmsLayerMz(): void {
     this.wmsLayerMz = new TileLayer({
@@ -273,14 +277,17 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         },
         serverType: 'geoserver', // Reemplaza con el tipo de servidor WMS (por ejemplo, 'geoserver')
         transition: 0
-      })
+      }),
+      visible: false
     });
     this.map.addLayer(this.wmsLayerMz);
   }
 
 
   /** =================================================================
-   * Layer wms de parcelas
+   * 
+   * Layer wms de parcelas de ARBA
+   * 
    ===================================================================*/
   private addWmsLayerPl(): void {
     this.wmsLayerPl = new TileLayer({
@@ -292,14 +299,16 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
         },
         serverType: 'geoserver', // Reemplaza con el tipo de servidor WMS (por ejemplo, 'geoserver')
         transition: 0
-      })
+      }),
+      visible: false
     });
     this.map.addLayer(this.wmsLayerPl);
   }
 
   /** =================================================================
    * 
-   * @param layerName 
+   * Switch para alternar la visibilidad de las capas 
+   * 
    ===================================================================*/
   toggleLayer(layerName: string): void {
     switch (layerName) {

@@ -5,18 +5,18 @@
  <!--</nav>-->
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Pdo. Ezeiza</a>
+      <a class="navbar-brand" href="#">Ezeiza Municipio</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="#">Link</a>
-          </li>
+          </li> -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Layers
+              Capas
             </a>
             <ul class="dropdown-menu">
               <li>
@@ -41,24 +41,24 @@
               </li>
               <li>
                 <label class="dropdown-item">
-                  <input type="checkbox" id="chkWmsMz" checked (change)="toggleLayer('wmsMz')"> Capa WMS Mz (ARBA)
+                  <input type="checkbox" id="chkWmsMz" (change)="toggleLayer('wmsMz')"> Capa Manzanas (ARBA WMS)
                 </label>
               </li>
               <li>
                 <label class="dropdown-item">
-                  <input type="checkbox" id="chkWmsPl" checked (change)="toggleLayer('wmsPl')"> Capa WMS Pl  (ARBA)
+                  <input type="checkbox" id="chkWmsPl" (change)="toggleLayer('wmsPl')"> Capa Parcelas (ARBA WMS)
                 </label>
               </li>
               <li>
             </ul>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link disabled" [ariaDisabled]="true" >Disabled</a>
-          </li>
+          </li> -->
         </ul>
         <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+          <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Buscar</button>
         </form>
       </div>
     </div>
