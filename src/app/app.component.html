@@ -68,13 +68,19 @@
             <li>
               <label class="dropdown-item">
                 <input type="radio" name="baseLayer" value="osm" checked (change)="toggleLayerBase('osm')">
-                OpenStreetMap
+                OpenStreetMap 
               </label>
             </li>
             <li>
               <label class="dropdown-item">
                 <input type="radio" name="baseLayer" value="satellite" (change)="toggleLayerBase('satellite')"> Imagen
                 Satelital (Google)
+              </label>
+            </li>
+            <li>
+              <label class="dropdown-item">
+                <input type="radio" name="baseLayer" value="hybrid" (change)="toggleLayerBase('hybrid')"> Imagen
+                Satelital (Google) con labels
               </label>
             </li>
           </ul>

@@ -34,6 +34,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
   private wmsLayerPl!: TileLayer;
   private osmLayer!: TileLayer;
   private satelliteLayer!: TileLayer;
+  private hybridLayer!: TileLayer;
 
   constructor(private dataFromGeoJsonService: GeojsonService) { }
 
@@ -141,11 +142,20 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       visible: false
     });
 
+    this.hybridLayer = new TileLayer({
+      source: new XYZ({
+        url: 'http://www.google.cn/maps/vt?lyrs=y&x={x}&y={y}&z={z}'
+      }),
+      visible: false
+    });
+
+
     this.map = new Map({
       target: 'map',
       layers: [
         this.osmLayer,
-        this.satelliteLayer
+        this.satelliteLayer,
+        this.hybridLayer
       ],
       view: new View({
         center: fromLonLat([-58.525879837178536, -34.85481804911688]), // Coordenadas de Buenos Aires, Muni Eze: -34.85481804911688, -58.525879837178536
@@ -159,10 +169,17 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
       case 'osm':
         this.osmLayer.setVisible(true);
         this.satelliteLayer.setVisible(false);
+        this.hybridLayer.setVisible(false);
         break;
       case 'satellite':
         this.osmLayer.setVisible(false);
         this.satelliteLayer.setVisible(true);
+        this.hybridLayer.setVisible(false);
+        break;
+      case 'hybrid':
+        this.osmLayer.setVisible(false);
+        this.satelliteLayer.setVisible(false);
+        this.hybridLayer.setVisible(true);
         break;
     }
   }
@@ -256,7 +273,7 @@ export class MapaOpenlayersComponent implements OnInit, AfterViewInit {
           color: '#0000FF', // Color azul para las líneas de ferrocarril
           width: 2,
           lineDash: [10, 10, 1, 10], // Línea discontinua
-          
+
         })
       })
     });
